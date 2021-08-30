@@ -64,6 +64,25 @@ class electric_field:
                     self.arr[x][y][z].length = -0.5
 
 
+#Accepts a point charge, and a point in space (a vector)
+def F_e(point_charge, vector):
+
+    # Assume point charge to be 0.1 coloumb
+    charge = 0.1
+
+    # Colomb constant
+    k = 9 * (10**9)
+
+    # Get the distance between the two points
+    d_x = vector.pos.x - point_charge.pos.x
+    d_y = vector.pos.y - point_charge.pos.z
+    d_z = vector.pos.z - point_charge.pos.z
+    distance = math.sqrt(d_x**2 + d_y**2 + d_z**2)
+
+    return (k * charge) / (distance**2)
+
+
+
 # Create point charge
 point_charge        = sphere()
 point_charge.pos    = vector(10,0,0)
@@ -78,5 +97,11 @@ while True:
 
     my_field.point_to_object(point_charge)
 
-    point_charge.pos.x -= 0.1
 
+    # The point charge will bounce between -10, 10
+    if point_charge.pos.x >= 10:
+        point_charge.pos.x -= 0.1
+    elif point_charge.pos.x <= -10:
+        point_charge.pos.x += 0.1
+    else:
+        point_charge.pos.x -= 0.1
