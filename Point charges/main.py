@@ -6,6 +6,23 @@ scene.width  = 1600
 scene.height = 800
 RED = color.hsv_to_rgb(vector(0,1,1))
 
+#Accepts a point charge, and a point in space (a vector)
+def F_e(point_charge, vector):
+
+    # Assume point charge to be 0.1 coloumb
+    charge = 10**-9
+
+    # Colomb constant
+    k = 9 * (10**9)
+
+    # Get the distance between the two points
+    d_x = vector.pos.x - point_charge.pos.x
+    d_y = vector.pos.y - point_charge.pos.z
+    d_z = vector.pos.z - point_charge.pos.z
+    distance = math.sqrt(d_x**2 + d_y**2 + d_z**2)
+
+    return (k * charge) / (distance**2)
+
 # Represents an electric field as a matrix of vectors at set intervals
 class electric_field:
 
@@ -56,31 +73,34 @@ class electric_field:
             for y in range(-5, 5):
                 for z in range(-5,5):
                     
+                    # Get the difference in x,y, and z components
                     x_diff = self.arr[x][y][z].pos.x - obj.pos.x
                     y_diff = self.arr[x][y][z].pos.y - obj.pos.y
                     z_diff = self.arr[x][y][z].pos.z - obj.pos.z
 
+                    # Set axis to that difference
                     self.arr[x][y][z].axis = vector(x_diff, y_diff, z_diff)
+                    # Flip direction and make it small (50 cm)
                     self.arr[x][y][z].length = -0.5
+    
+    def change_magnitude(self, point_charge):
 
-
-#Accepts a point charge, and a point in space (a vector)
-def F_e(point_charge, vector):
-
-    # Assume point charge to be 0.1 coloumb
-    charge = 0.1
-
-    # Colomb constant
-    k = 9 * (10**9)
-
-    # Get the distance between the two points
-    d_x = vector.pos.x - point_charge.pos.x
-    d_y = vector.pos.y - point_charge.pos.z
-    d_z = vector.pos.z - point_charge.pos.z
-    distance = math.sqrt(d_x**2 + d_y**2 + d_z**2)
-
-    return (k * charge) / (distance**2)
-
+        # Access all arrows in matrix
+        for x in range(-5,5):
+            for y in range(-5,5):
+                for z in range(-5,5):
+                    
+                    # Calculate the magnitude of the force between the 
+                    # point charge and every point in the system
+                    magnitude = F_e(point_charge, self.arr[x][y][z])
+                    
+                    # Set the length of the vector to the calculated magnitude 
+                    # (unless it's greater than 1, in which case let's rate 
+                    # limit it so it doesnt go crazy)
+                    if magnitude > 1:
+                        self.arr[x][y][z].length = 1
+                    else:
+                        self.arr[x][y][z].length = magnitude
 
 
 # Create point charge
@@ -96,6 +116,7 @@ while True:
     rate(10)
 
     my_field.point_to_object(point_charge)
+    my_field.change_magnitude(point_charge)
 
 
     # The point charge will bounce between -10, 10
