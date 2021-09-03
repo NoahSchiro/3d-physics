@@ -4,19 +4,16 @@ import math
 #Accepts a point charge, and a point in space (a vector)
 def force_for_electric_field(point_charge, vector):
 
-    # Assume point charge to be 0.1 coloumb
-    charge = 10**-9
-
     # Colomb constant
     k = 9 * (10**9)
 
     # Get the distance between the two points
-    d_x = vector.pos.x - point_charge.pos.x
-    d_y = vector.pos.y - point_charge.pos.z
-    d_z = vector.pos.z - point_charge.pos.z
+    d_x = vector.pos.x - point_charge.pos[0]
+    d_y = vector.pos.y - point_charge.pos[1]
+    d_z = vector.pos.z - point_charge.pos[2]
     distance = math.sqrt(d_x**2 + d_y**2 + d_z**2)
 
-    return (k * charge) / (distance**2)
+    return (k * point_charge.charge) / (distance**2)
 
 
 # Represents an electric field as a matrix of vectors at set intervals
@@ -70,14 +67,14 @@ class electric_field:
                 for z in range(-5,5):
                     
                     # Get the difference in x, y, and z components
-                    x_diff = self.arr[x][y][z].pos.x - obj.pos.x
-                    y_diff = self.arr[x][y][z].pos.y - obj.pos.y
-                    z_diff = self.arr[x][y][z].pos.z - obj.pos.z
+                    x_diff = self.arr[x][y][z].pos.x - obj.pos[0]
+                    y_diff = self.arr[x][y][z].pos.y - obj.pos[1]
+                    z_diff = self.arr[x][y][z].pos.z - obj.pos[2]
 
                     # Set axis to that difference
                     self.arr[x][y][z].axis = vector(x_diff, y_diff, z_diff)
                     
-    
+    # This changes magnitude based on nearby charge
     def change_magnitude(self, point_charge):
 
         # Access all arrows in matrix
@@ -88,13 +85,23 @@ class electric_field:
                     # Calculate the magnitude of the force between the 
                     # point charge and every point in the system
                     magnitude = force_for_electric_field(point_charge, self.arr[x][y][z])
+
+                    # Our colors are rgb from 0,0,0 to 1,1,1. If we want to map our 
+                    # magnitude to the color of an arrow, we need to squash all 
+                    # possible numbers down to that range. The hyperbolic tangent 
+                    # function is good for this. In our case, we only want 0, 1 and 
+                    # tanh() gets us -1, 1, so we will pass in the absolute value of our magnitude
+                    squash_mag = math.tanh(abs(magnitude)) # <- Something about this just feels so clever
+                    self.arr[x][y][z].color = vec(1, 1-squash_mag, 1- squash_mag)
                     
                     # Set the length of the vector to the calculated magnitude 
                     # (unless it's greater than 1, in which case let's rate 
                     # limit it so it doesnt go crazy). We also are flipping 
                     # the direction of the arrows because vpython handles vectors weirdly
-                    if magnitude > 1:
+                    if magnitude < -1:
                         self.arr[x][y][z].length = -1
+                    elif magnitude > 1:
+                        self.arr[x][y][z].length = 1
                     else:
                         self.arr[x][y][z].length = -magnitude
 
