@@ -103,7 +103,7 @@ class electric_field:
                     elif magnitude > 1:
                         self.arr[x][y][z].length = 1
                     else:
-                        self.arr[x][y][z].length = -magnitude
+                        self.arr[x][y][z].length = magnitude
 
 class point_charge:
 
