@@ -9,25 +9,42 @@ scene.height = 800
 # Create field
 my_field = electric_field()
 
-system
-my_charge = point_charge(0.001, -1E-9, 10, 10, 10)
+# Make four charges at different positions
+sys_charges = []
+sys_charges.append(point_charge(10E-15, -10E-8, 1, 1, 1))
+sys_charges.append(point_charge(10E-15,  10E-8, 0, 0, 0))
+sys_charges.append(point_charge(10E-15, -10E-8, 1, 1, 0))
+sys_charges.append(point_charge(10E-15, -10E-8, 0, 1, 1))
 
 while True:
 
     # Set frame rate
     rate(20)
 
-    # This allows the charge to bounce around
-    if my_charge.pos[0] >= 10:
-        my_charge.apply_force([-0.1, -0.1, -0.1])
-    if my_charge.pos[0] <= -10:
-        my_charge.apply_force([0.1, 0.1, 0.1])
-
     # Calculates the influence of the charge on space
-    my_field.calculate_field([my_charge])
+    my_field.calculate_field(sys_charges)
 
-    # Allow drag to take effect on point charge
-    my_charge.apply_force(my_charge.point_charge_drag())
+    # Loop through every charge in the system
+    for i in range(len(sys_charges)):
 
-    # Moves the charge
-    my_charge.update_position()
+        # Collect all forces on charge
+        total_forces = []
+
+        # Drag is added to forces
+        total_forces.append(sys_charges[i].point_charge_drag())
+
+        # Loop through all the other charges
+        for j in range(len(sys_charges)):
+            if sys_charges[i] != sys_charges[j]:
+
+                # Add the electric forces to our list
+                total_forces.append(pe.electric_force(sys_charges[j], sys_charges[i]))
+        
+        # Add up all those forces
+        total_force = pe.vector_addition(total_forces)
+
+        # Apply force
+        sys_charges[i].apply_force(total_force)
+
+        # Moves the charge
+        sys_charges[i].update_position()

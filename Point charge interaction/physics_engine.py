@@ -54,7 +54,12 @@ class point_charge:
         cross_sec_area = self.obj.radius
         
         velocity_mag = math.sqrt(self.velocity[0]**2 + self.velocity[1]**2 + self.velocity[2]**2)
-        velocity_dir = [self.velocity[0]/velocity_mag, self.velocity[1]/velocity_mag, self.velocity[2]/velocity_mag]
+
+        # Avoidance of divide by 0 problems
+        if velocity_mag == 0:
+            velocity_dir = [0,0,0]
+        else:
+            velocity_dir = [self.velocity[0]/velocity_mag, self.velocity[1]/velocity_mag, self.velocity[2]/velocity_mag]
 
         # Use drag equation to calculate force magnitude
         force_mag = (fluid_density * velocity_mag**2 * drag_coeffcient * cross_sec_area) / 2
@@ -107,7 +112,7 @@ class engine():
         magnitude = (k * point_charge1.charge * point_charge2.charge) / distance**2
         # Direction is as a unit vector. Additionally, the value we are 
         # returning is the force that point_charge1 exerts on point_charge2
-        direction = [d_x/distance, d_y/distance, d_z/distance]
+        direction = [-d_x/distance, -d_y/distance, -d_z/distance]
 
         # Direction times magnitude is our resultant vector
         return [direction[0] * magnitude, direction[1] * magnitude, direction[2] * magnitude]
