@@ -8,6 +8,8 @@ scene.height = 800
 
 # Create field
 my_field = electric_field()
+
+system
 my_charge = point_charge(0.001, -1E-9, 10, 10, 10)
 
 while True:
@@ -23,6 +25,9 @@ while True:
 
     # Calculates the influence of the charge on space
     my_field.calculate_field([my_charge])
+
+    # Allow drag to take effect on point charge
+    my_charge.apply_force(my_charge.point_charge_drag())
 
     # Moves the charge
     my_charge.update_position()

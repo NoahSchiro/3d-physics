@@ -42,6 +42,27 @@ class point_charge:
                     curr_y+self.velocity[1],
                     curr_z+self.velocity[2]]
 
+    # Calculates a drag force for point charges
+    def point_charge_drag(self):
+        
+        # Technically, the drag coeffcienct for a sphere varies 
+        # wildly due to some weird fluid dynamic stuff but 
+        # this is just a simplification
+        drag_coeffcient = 0.5
+        # Air density (I may change this to make the simulation prettier)
+        fluid_density = 1.225
+        cross_sec_area = self.obj.radius
+        
+        velocity_mag = math.sqrt(self.velocity[0]**2 + self.velocity[1]**2 + self.velocity[2]**2)
+        velocity_dir = [self.velocity[0]/velocity_mag, self.velocity[1]/velocity_mag, self.velocity[2]/velocity_mag]
+
+        # Use drag equation to calculate force magnitude
+        force_mag = (fluid_density * velocity_mag**2 * drag_coeffcient * cross_sec_area) / 2
+        # Direction will be opposite of velocity
+        force_dir = [-velocity_dir[0], -velocity_dir[1], -velocity_dir[2]]
+        
+        return [force_mag * force_dir[0], force_mag * force_dir[1], force_mag * force_dir[2]] 
+
     # Force must be applied as a 3 element list!
     def apply_force(self, force):
 
