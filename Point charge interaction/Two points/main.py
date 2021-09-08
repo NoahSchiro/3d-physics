@@ -11,10 +11,10 @@ my_field = electric_field()
 
 # Make four charges at different positions
 sys_charges = []
-sys_charges.append(point_charge(10E-15, -10E-8, 1, 1, 1))
-sys_charges.append(point_charge(10E-15,  10E-8, 0, 0, 0))
-sys_charges.append(point_charge(10E-15, -10E-8, 1, 1, 0))
-sys_charges.append(point_charge(10E-15, -10E-8, 0, 1, 1))
+sys_charges.append(point_charge(10E-15, -10E-8,-10, 1, 0))
+sys_charges.append(point_charge(10E-15,  10E-8, 10,-1, 0))
+sys_charges[0].apply_force([ 0.1, 0, 0])
+sys_charges[1].apply_force([-0.1, 0, 0])
 
 while True:
 
@@ -29,9 +29,6 @@ while True:
 
         # Collect all forces on charge
         total_forces = []
-
-        # Drag is added to forces
-        total_forces.append(sys_charges[i].point_charge_drag())
 
         # Loop through all the other charges
         for j in range(len(sys_charges)):
