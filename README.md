@@ -4,7 +4,9 @@
  
  **DEPENDENCIES:**
 - Python 3.5 or greater
-- Vpython 
- ## Point charges
+- Vpython
+
+
+ ## What to do
  ---
- A red sphere which carries some charge (-1 nano coulomb) floats through a defined 3 dimensional space. Each point in space is pulled on by the point charge and is represented with an arrow.
+Make sure you have the above dependencies. Click on the folder of the simulation you would like to run. Click on the main.py for that simulation. Run the program.
