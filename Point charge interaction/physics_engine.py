@@ -93,7 +93,7 @@ class engine():
         # Return the answer
         return ans
 
-    # Returns the electric force between two point charges
+    # Returns the electric force that point_charge1 excerts on point_charge2
     def electric_force(point_charge1, point_charge2):
         # Colomb constant
         k = 9 * (10**9)
@@ -124,10 +124,15 @@ class engine():
         d_z = point_charge1.pos[2] - point_in_space[2]
         distance = math.sqrt(d_x**2 + d_y**2 + d_z**2)
 
-        magnitude = (k * point_charge1.charge) / distance**2
-        # Direction is as a unit vector. Additionally, the value we are 
-        # returning is the force that point_charge1 exerts on point_charge2
-        direction = [d_x/distance, d_y/distance, d_z/distance]
+        # If statement avoid divide by 0 issues
+        if distance == 0:
+            magnitude = 0
+            direction = [0,0,0]
+        else:
+            magnitude = (k * point_charge1.charge) / distance**2
+            # Direction is as a unit vector. Additionally, the value we are 
+            # returning is the force that point_charge1 exerts on point_charge2
+            direction = [d_x/distance, d_y/distance, d_z/distance]
 
         # Direction times magnitude is our resultant vector
         return [direction[0] * magnitude, direction[1] * magnitude, direction[2] * magnitude]
